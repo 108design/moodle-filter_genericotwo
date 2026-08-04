@@ -72,6 +72,10 @@ Each template can optionally be limited to specific Moodle contexts using the `A
 
 If you still have content containing old-style `{GENERICO:type="xx"}` tags (rather than `{G2:...}`), you can have Generico Two process those too — enable `Site Administration > Plugins > Filters > Generico Two filter > Handle legacy tags`. When on, legacy tags are matched against your Generico Two templates the same way `{G2:...}` tags are, so you don't need to have every author update existing content after migrating.
 
+## HTML Editor (tiny) plugin
+
+There is a companion plugin for Moodle's TinyMCE HTML editor that supports both the original Generico and Generico Two tags. This makes it much easier to insert filter strings into an HTML area. You can see and get that at: [tiny_generico](https://marketplace.moodle.com/plugins/2858)
+
 ## Installation
 
 1.  Download the `filter_genericotwo` plugin.

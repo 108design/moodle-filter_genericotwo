@@ -31,7 +31,7 @@ function xmldb_filter_genericotwo_install() {
     // Templates registered here are DB rows (unlike filter_generico, which stores presets
     // as plugin config), so pre-installing one just means inserting its preset as a record.
     $forinstall = [
-        'welcomeuser', 'accordion', 'accordionitem', 'tabs', 'tabitem', 'videolightbox',
+        'welcomeuser', 'accordian', 'accordianitem', 'tabs', 'tabitem', 'videolightbox',
         'pw-multiplayeraudio', 'pw-onceaudio', 'pw-poodllaudio', 'qrcode',
     ];
 
