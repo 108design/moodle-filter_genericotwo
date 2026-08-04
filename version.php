@@ -14,16 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Version details
  *
  * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version   = 2026072901;        // The current plugin version (Date: YYYYMMDDXX).
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version   = 2026080400;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2024100700;        // Requires this Moodle version.
 $plugin->component = 'filter_genericotwo'; // Full name of the plugin (used for diagnostics).
-
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '1.0.0 (Build 2026080400)';

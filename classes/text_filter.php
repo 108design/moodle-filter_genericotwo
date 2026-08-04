@@ -16,12 +16,12 @@
 
 namespace filter_genericotwo;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Simple filter to replace G2 tags with a placeholder.
  *
  * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class text_filter extends \core_filters\text_filter {
     /**
@@ -33,10 +33,10 @@ class text_filter extends \core_filters\text_filter {
      */
     public function filter($text, array $options = []) {
         // If we don't even have our tag, just bail out.
-        // Check for G2 tag (fast check)
+        // Check for G2 tag (fast check).
         $hasg2 = strpos($text, '{G2:') !== false;
 
-        // Check for Legacy tag if enabled
+        // Check for legacy tag if enabled.
         $handlelegacy = get_config('filter_genericotwo', 'handlelegacytags');
         $haslegacy = false;
         if ($handlelegacy) {
@@ -47,7 +47,7 @@ class text_filter extends \core_filters\text_filter {
             return $text;
         }
 
-        // [^}]* rather than .*? so the match can never expand across a closing brace
+        // Use [^}]* rather than .*? so the match can never expand across a closing brace
         // (e.g. two tags in one paragraph merging into a single match).
         $tagpattern = '\{G2:[^}]*\}';
         if ($handlelegacy) {
@@ -72,13 +72,13 @@ class text_filter extends \core_filters\text_filter {
         }
 
         return $newtext;
-
     }
 
 
     /**
-     * Generico callback
-     * @param array $link
+     * Generico callback.
+     *
+     * @param array $matches Regex matches; $matches[1] is the bare {G2:...} tag.
      * @return mixed
      */
     private function filter_genericotwo_callback(array $matches) {
@@ -168,11 +168,11 @@ class text_filter extends \core_filters\text_filter {
             return '';
         }
 
-        // CSS Handling
-        // Detect protocol for external links
+        // CSS handling.
+        // Detect protocol for external links.
         $scheme = parse_url($CFG->wwwroot, PHP_URL_SCHEME) . ':';
 
-        // 1. Import CSS (Require CSS)
+        // 1. Import CSS (Require CSS).
         $importcss = $template->importcss;
         if (!empty($importcss)) {
             if (strpos($importcss, '//') === 0) {
@@ -182,27 +182,24 @@ class text_filter extends \core_filters\text_filter {
             }
         }
 
-        // 2. Custom CSS
+        // 2. Custom CSS.
         $customcssurl = false;
         if (!empty($template->customcss)) {
             $url = '/filter/genericotwo/css.php';
-            // Use time modified or current time to bust cache if possible, but we don't have it handy in the filterprops or template object easily without more queries if not selected.
-            // But we fetched the whole template record, so we might have timemodified?
-            // The template object comes from $DB->get_record, so check if it has timemodified.
-            // Standard Generico tables usually have it. Let's assume yes or default to 0.
+            // Bust the cache using timemodified if available, else fall back to 0.
             $rev = isset($template->timemodified) ? $template->timemodified : 0;
             $params = [
                 'id' => $template->id,
-                'rev' => $rev, // Cache busting
+                'rev' => $rev, // Cache busting.
             ];
             $customcssurl = new \moodle_url($url, $params);
         }
 
-        // Initialize fallback props
+        // Initialize fallback props.
         $filterprops['CSSLINK'] = false;
         $filterprops['CSSCUSTOM'] = false;
 
-        // Try to add to head
+        // Try to add to head.
         if (!$PAGE->headerprinted && !$PAGE->requires->is_head_done()) {
             if ($importcss) {
                 $PAGE->requires->css(new \moodle_url($importcss));
@@ -211,7 +208,7 @@ class text_filter extends \core_filters\text_filter {
                 $PAGE->requires->css($customcssurl);
             }
         } else {
-            // Late injection fallback
+            // Late injection fallback.
             if ($importcss) {
                 $filterprops['CSSLINK'] = $importcss;
             }
@@ -230,21 +227,21 @@ class text_filter extends \core_filters\text_filter {
             }
         }
 
-        // Add context from /  URLPARAMS / COURSE/ USER / Defaults
+        // Add context from /  URLPARAMS / COURSE/ USER / Defaults.
         $haystack = $mustachestring . ' ' . $datasetvars . ' ' . $jsstring;
-        // Fetch URL params for this template
+        // Fetch URL params for this template.
         $urlprops = $this->fetch_url_params($haystack);
         if (!empty($urlprops)) {
             $filterprops = array_merge($filterprops, $urlprops);
         }
 
-        // Fetch course props for this template
+        // Fetch course props for this template.
         $courseprops = $this->fetch_course_props($haystack);
         if (!empty($courseprops)) {
             $filterprops = array_merge($filterprops, $courseprops);
         }
 
-         // Fetch user props for this template
+        // Fetch user props for this template.
         $userprops = $this->fetch_user_props($haystack);
         if (!empty($userprops)) {
             $filterprops = array_merge($filterprops, $userprops);
@@ -276,13 +273,14 @@ class text_filter extends \core_filters\text_filter {
             $filterprops = array_merge($filterprops, $defaultprops);
         }
 
-        // Dataset
+        // Dataset.
         if (!empty($template->dataset)) {
-             // replace any variables from filterprops in datasetvars
-             // A dataset vars might look like: {{COURSE:id}},{{USER:firstname}},'hello',{{weather}}
-             // in filterprops we might have: COURSE:id, USER:firstname, weather
-             // so we surround our filterprops field name with {{ and }} and do an str_replace
-             // We DON'T put any variables in the dataset body, because we want to put them all through moodles cleaning process
+            // Replace any variables from filterprops in datasetvars.
+            // Datasetvars might look like: {{COURSE:id}},{{USER:firstname}},'hello',{{weather}}.
+            // In filterprops we might have: COURSE:id, USER:firstname, weather.
+            // So we surround our filterprops field name with {{ and }} and do a str_replace.
+            // We DON'T put any variables in the dataset body, because we want to put them all
+            // through Moodle's cleaning process.
             if (!empty($template->datasetvars)) {
                 $datasetvars = $template->datasetvars;
                 foreach ($filterprops as $name => $value) {
@@ -317,8 +315,8 @@ class text_filter extends \core_filters\text_filter {
             return $text;
         }
 
-        // Create a callback that forces the use of our pre-populated template
-        $newtext = preg_replace_callback($search, function($matches) use ($template) {
+        // Create a callback that forces the use of our pre-populated template.
+        $newtext = preg_replace_callback($search, function ($matches) use ($template) {
             return $this->preview_callback($matches, $template);
         }, $text);
 
@@ -369,7 +367,7 @@ class text_filter extends \core_filters\text_filter {
             return '';
         }
 
-        // Determine context for properties
+        // Determine context for properties.
         $haystack = $mustachestring . ' ' . $datasetvars . ' ' . $jsstring;
 
         $urlprops = $this->fetch_url_params($haystack);
@@ -387,7 +385,7 @@ class text_filter extends \core_filters\text_filter {
             $filterprops = array_merge($filterprops, $userprops);
         }
 
-        // Defaults
+        // Defaults.
         $defaults = isset($template->variabledefaults) ? $template->variabledefaults : '';
         $defaultprops = [];
         if (!empty($defaults)) {
@@ -395,7 +393,7 @@ class text_filter extends \core_filters\text_filter {
             $defaultprops = \filter_genericotwo\utils::fetch_filter_properties($defaults);
             if (!empty($defaultprops)) {
                 foreach ($defaultprops as $name => $value) {
-                     // Only overwrite if not already set.
+                    // Only overwrite if not already set.
                     if (!array_key_exists($name, $filterprops)) {
                         // If we have options as defaults, lets just take the first one.
                         if (strpos($value, '|') !== false) {
@@ -412,9 +410,9 @@ class text_filter extends \core_filters\text_filter {
             $filterprops = array_merge($filterprops, $defaultprops);
         }
 
-        // Dataset
-        if(!empty($template->dataset)) {
-            if(!empty($datasetvars)) {
+        // Dataset.
+        if (!empty($template->dataset)) {
+            if (!empty($datasetvars)) {
                 foreach ($filterprops as $name => $value) {
                     $datasetvars = str_replace('{{' . $name . '}}', $value, $datasetvars);
                 }
@@ -427,11 +425,17 @@ class text_filter extends \core_filters\text_filter {
             }
         }
 
-        // Output
+        // Output.
         $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
         return $renderer->do_render($mustachestring, $jsstring, $filterprops);
     }
 
+    /**
+     * Resolve {{URLPARAM:name}} placeholders from the page URL.
+     *
+     * @param string $templatebody haystack of template content/JS/datasetvars to scan.
+     * @return array filter props keyed as URLPARAM:name.
+     */
     private function fetch_url_params($templatebody) {
         $filterprops = [];
         if (strpos($templatebody, '{{URLPARAM:') !== false) {
@@ -440,7 +444,6 @@ class text_filter extends \core_filters\text_filter {
             $thefields = array_unique($matches[1]);
 
             foreach ($thefields as $urlprop) {
-
                 if (empty($urlprop)) {
                     continue;
                 }
@@ -448,13 +451,19 @@ class text_filter extends \core_filters\text_filter {
                 // Check if it exists in the params to the url and if so, set it.
                 $propvalue = optional_param($urlprop, '', PARAM_TEXT);
 
-                // Add prop to return array
+                // Add prop to return array.
                 $filterprops['URLPARAM:' . $urlprop] = $propvalue;
             }
         }
         return $filterprops;
     }
 
+    /**
+     * Resolve {{COURSE:field}} placeholders from $COURSE and its custom fields.
+     *
+     * @param string $templatebody haystack of template content/JS/datasetvars to scan.
+     * @return array filter props keyed as COURSE:field.
+     */
     private function fetch_course_props($templatebody) {
         global $COURSE;
         $filterprops = [];
@@ -502,18 +511,23 @@ class text_filter extends \core_filters\text_filter {
         return $filterprops;
     }
 
+    /**
+     * Resolve {{USER:field}} placeholders from $USER, profile fields, and picurl/pic specials.
+     *
+     * @param string $templatebody haystack of template content/JS/datasetvars to scan.
+     * @return array filter props keyed as USER:field.
+     */
     private function fetch_user_props($templatebody) {
         global $USER, $CFG;
         $filterprops = [];
 
-        // If we have user variables e.g {{USER:firstname}}
+        // If we have user variables e.g {{USER:firstname}}.
         if (strpos($templatebody, '{{USER:') !== false) {
             $uservars = get_object_vars($USER);
             $matches = [];
-            // This pattern looks for {{USER: followed by any characters until the closing }}
-            // The ([^}]+) captures the "someprop" part
+            // This pattern looks for {{USER: followed by any characters until the closing }}.
+            // The captured property names end up in $matches[1].
             preg_match_all('/\{\{USER:([^}]+)\}\}/', $templatebody, $matches);
-            // $matches[1] contains the captured groups (the property names)
             $thefields = array_unique($matches[1]);
 
             // User Props.
@@ -554,14 +568,21 @@ class text_filter extends \core_filters\text_filter {
 
                 // If we have a propname and a propvalue, do the replace.
                 if (!empty($userprop) && !is_null($propvalue)) {
-                    // Add prop to return array
+                    // Add prop to return array.
                     $filterprops['USER:' . $thefield] = $propvalue;
                 }
             }
-        }//end of of we {{USER:xxx}}
+        } // End of {{USER:xxx}} check.
         return $filterprops;
     }
 
+    /**
+     * Run a template's dataset SQL query, substituting datasetvars as positional params.
+     *
+     * @param \stdClass $template template record with a dataset SQL query.
+     * @param string $datasetvars CSV of query params (already had {{prop}} placeholders resolved).
+     * @return array result rows, or an empty array on any query error.
+     */
     private function fetch_dataset($template, $datasetvars) {
         global $DB;
         $vars = [];
@@ -588,7 +609,6 @@ class text_filter extends \core_filters\text_filter {
         } catch (Exception $e) {
             return [];
         }
-
     }
 
     /**
@@ -651,10 +671,9 @@ class text_filter extends \core_filters\text_filter {
      * @return array exploded values
      */
     private function explode_csv_list(string $csvlist): array {
-        if(!$csvlist || empty($csvlist)) {
+        if (!$csvlist || empty($csvlist)) {
             return [];
         }
         return array_filter(array_map(fn($v) => trim($v), explode(',', $csvlist)));
     }
-
 }

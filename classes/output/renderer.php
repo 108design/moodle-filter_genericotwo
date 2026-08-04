@@ -1,28 +1,58 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
- * Created by PhpStorm.
- * User: ishineguy
- * Date: 2018/06/26
- * Time: 13:16
+ * Renderer for filter_genericotwo.
+ *
+ * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace filter_genericotwo\output;
 
 use renderable;
 
-
+/**
+ * Renderer for filter_genericotwo.
+ *
+ * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class renderer extends \plugin_renderer_base implements renderable {
+    /**
+     * Render a template's mustache content and JS through the string loader.
+     *
+     * @param string $mustachestring the template's mustache content
+     * @param string $jsstring the template's mustache JS content
+     * @param array $templatedata the context to render both against
+     * @return string the rendered HTML (with JS appended via the jsloader wrapper)
+     */
     public function do_render($mustachestring, $jsstring, $templatedata) {
-        // here we fetch the mustache engine, reset the loader to string loader
-        // render the custom finish screen, and restore the original loader
+        // Fetch the mustache engine, reset the loader to string loader,
+        // render the custom finish screen, and restore the original loader.
         $mustache = $this->get_mustache();
         $oldloader = $mustache->getLoader();
         $mustache->setLoader(new \Mustache_Loader_StringLoader());
-        
+
         // Render the HTML content headers.
         $tpl = $mustache->loadTemplate($mustachestring);
         $finishedcontents = $tpl->render($templatedata);
-        
+
         // Render the JS content if we have any.
         $finishedjs = '';
         if (!empty($jsstring)) {
@@ -34,11 +64,11 @@ class renderer extends \plugin_renderer_base implements renderable {
 
         if (!empty($finishedjs)) {
             $jsloaderdata = ['jscontent' => $finishedjs];
-            $loader_tpl = $mustache->loadTemplate('filter_genericotwo/jsloader');
-            $finishedcontents .= $loader_tpl->render($jsloaderdata);
+            $loadertpl = $mustache->loadTemplate('filter_genericotwo/jsloader');
+            $finishedcontents .= $loadertpl->render($jsloaderdata);
         }
 
-        // Prepare CSS URLs for late loading if needed
+        // Prepare CSS URLs for late loading if needed.
         $cssurls = [];
         if (!empty($templatedata['CSSLINK'])) {
             $cssurls[] = $templatedata['CSSLINK'];
@@ -47,7 +77,7 @@ class renderer extends \plugin_renderer_base implements renderable {
             $cssurls[] = $templatedata['CSSCUSTOM'];
         }
 
-        // Always call init, passing CSS if any
+        // Always call init, passing CSS if any.
         $this->page->requires->js_call_amd('filter_genericotwo/loader', 'init', [$cssurls]);
 
         return $finishedcontents;

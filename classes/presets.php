@@ -16,15 +16,14 @@
 
 namespace filter_genericotwo;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Presets helper class
  *
  * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class presets {
-
     /**
      * Parse preset template
      *
@@ -69,7 +68,7 @@ class presets {
         foreach ($dirs as $dir) {
             foreach ($dir as $fileinfo) {
                 if (!$fileinfo->isDot() && !$fileinfo->isDir()) {
-                    // Check extension
+                    // Check extension.
                     if ($fileinfo->getExtension() !== 'txt' && $fileinfo->getExtension() !== 'json') {
                          continue;
                     }

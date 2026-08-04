@@ -29,6 +29,10 @@ class constants {
      * @var string Frankenstyle name of plugin.
      */
     const M_COMPONENT = 'filter_genericotwo';
+
+    /**
+     * @var string Default AMD-style JS wrapper templates are sandwiched into (see migrate.php).
+     */
     const M_JS_DEFAULT = "require(['core/log'], function(log) {
         @@REPLACEME@@
     });";

@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Upgrade code for filter_genericotwo.
  *
@@ -65,12 +63,30 @@ function xmldb_filter_genericotwo_upgrade($oldversion) {
         // Adding fields.
         $fields = [
             'allowedcontexts' => new xmldb_field('allowedcontexts', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'jscontent'),
-            'allowedcontextids' => new xmldb_field('allowedcontextids', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'allowedcontexts'),
+            'allowedcontextids' => new xmldb_field(
+                'allowedcontextids',
+                XMLDB_TYPE_CHAR,
+                '255',
+                null,
+                null,
+                null,
+                null,
+                'allowedcontexts'
+            ),
             'dataset' => new xmldb_field('dataset', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'allowedcontextids'),
             'datasetvars' => new xmldb_field('datasetvars', XMLDB_TYPE_TEXT, null, null, null, null, null, 'dataset'),
             'templateend' => new xmldb_field('templateend', XMLDB_TYPE_TEXT, null, null, null, null, null, 'datasetvars'),
             'instructions' => new xmldb_field('instructions', XMLDB_TYPE_TEXT, null, null, null, null, null, 'templateend'),
-            'instructionsformat' => new xmldb_field('instructionsformat', XMLDB_TYPE_INTEGER, '4', null, true, null, '0', 'instructions'),
+            'instructionsformat' => new xmldb_field(
+                'instructionsformat',
+                XMLDB_TYPE_INTEGER,
+                '4',
+                null,
+                true,
+                null,
+                '0',
+                'instructions'
+            ),
         ];
 
         foreach ($fields as $field) {
@@ -128,6 +144,21 @@ function xmldb_filter_genericotwo_upgrade($oldversion) {
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2026022501, 'filter', 'genericotwo');
+    }
+
+    if ($oldversion < 2026080400) {
+        // Define field dataset to be modified. It was originally created as CHAR(255) in the
+        // 2025121602 upgrade step, but install.xml has always specified TEXT. Widen it on sites
+        // that upgraded through that step so long dataset SQL queries can be migrated/saved.
+        $table = new xmldb_table('filter_genericotwo_templates');
+        $field = new xmldb_field('dataset', XMLDB_TYPE_TEXT, null, null, null, null, null, 'allowedcontextids');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2026080400, 'filter', 'genericotwo');
     }
 
     return true;

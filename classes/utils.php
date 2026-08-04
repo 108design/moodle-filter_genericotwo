@@ -27,7 +27,6 @@ use filter_genericotwo\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class utils {
-
     /**
      * Empty prop array
      * @return array
@@ -50,11 +49,11 @@ class utils {
         // Let's do a general clean of all input here.
         $filterstring = clean_param($filterstring, PARAM_TEXT);
 
-        // Remove the opening tag (G2 or GENERICO)
+        // Remove the opening tag (G2 or GENERICO).
         $rawproperties = preg_replace('/^\{(?:G2|GENERICO):/i', '', $filterstring);
 
-        // Remove the closing brace and any trailing content (though matched string usually ends with })
-        // We split by closing brace to get the inner content
+        // Remove the closing brace and any trailing content (though matched string usually ends with }).
+        // We split by closing brace to get the inner content.
         $rawproperties = explode("}", $rawproperties);
 
         // Here we remove any html tags we find. They should not be in here

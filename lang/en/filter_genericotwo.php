@@ -14,10 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Strings for component 'filter_genericotwo'.
+ *
+ * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
-$string['acecdn'] = 'Ace Editor CDN';
-$string['acecdn_desc'] = 'Choose the CDN to load Ace Editor from. Staticfile is recommended for users in China.';
 $string['addtemplate'] = 'Add template';
 $string['aigensuccess'] = "AI generation successful";
 $string['aihelper_apply_btn'] = 'Apply';
@@ -33,8 +39,6 @@ $string['bundle'] = 'Bundle';
 $string['deleteconfirm'] = 'Are you sure you want to delete this template?';
 $string['deletetemplate'] = 'Delete template';
 $string['edittemplate'] = 'Edit template';
-$string['enableace'] = 'Enable Ace Editor';
-$string['enableace_desc'] = 'Enable syntax highlighting options using Ace Editor.';
 $string['enableaihelper'] = 'Enable AI helper';
 $string['enableaihelper_desc'] = 'Enable the AI wizard button for template editing.';
 $string['filtername'] = 'Generico Two filter';
@@ -56,13 +60,13 @@ $string['paused'] = 'Paused';
 $string['play'] = 'Play';
 $string['playbackspeed'] = 'Playback speed';
 $string['playing'] = 'Playing';
-$string['pluginname'] = 'Generico Two filter';
+$string['pluginname'] = 'Generico Two(G2) filter';
 $string['presetavailable'] = 'Generico Two preset available';
 $string['presets'] = 'Presets';
 $string['presets_help'] = 'Choose a preset to populate this template with preconfigured values, then click Save changes to create the template. Presets are not available for use until they have been saved as templates.';
 $string['preview'] = 'Preview';
 $string['preview_desc'] = 'Preview the template output using the Test 1 or Test 2 strings.';
-$string['privacy:metadata'] = 'The Generico Two filter does not store any personal data.';
+$string['privacy:metadata'] = 'The Generico Two (G2) filter does not store any personal data.';
 $string['privacy:preference:templates_fullwidth'] = 'Whether the templates page is shown at full or limited width.';
 $string['ready'] = 'Ready';
 $string['remainingplays'] = 'Remaining plays';

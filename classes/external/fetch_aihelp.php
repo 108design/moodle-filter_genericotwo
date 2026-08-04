@@ -29,10 +29,14 @@ use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_single_structure;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * AJAX web service that powers the AI helper in the template editor.
+ *
+ * @package    filter_genericotwo
+ * @copyright  2024 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class fetch_aihelp extends external_api {
-
     /**
      * Parameters for the execute function.
      *
@@ -62,20 +66,7 @@ class fetch_aihelp extends external_api {
         self::validate_context($context);
         require_capability('filter/genericotwo:managetemplates', $context);
 
-        // Decode the incoming JSON payload.
-        /*
-        $editors = json_decode($params['currentcode'], true);
-        $responsedata = [];
-
-        if (is_array($editors)) {
-            foreach ($editors as $id => $content) {
-                // For now, just return "hello world" for each editor.
-                $responsedata[$id] = "hello world";
-            }
-        }
-        */
-
-        // Build the full prompt
+        // Build the full prompt.
         $thefullprompt = self::fetch_full_prompt($params['prompt'], $params['currentcode']);
 
         global $USER;
@@ -308,13 +299,22 @@ class fetch_aihelp extends external_api {
         return $out;
     }
 
+    /**
+     * Build the full LLM prompt from the user's instructions and the current editor contents.
+     *
+     * @param string $prompt the user's instructions for what to change.
+     * @param string $currentcode JSON encoded string containing all editor contents.
+     * @return string the assembled prompt.
+     */
     private static function fetch_full_prompt($prompt, $currentcode) {
-        // Build a prompt using the template below;
+        // Build a prompt using the template below.
         $promptbits = [];
         $promptbits[] = "You are an expert front end developer for Moodle (a learning management system).";
         $promptbits[] = "You developing a front end widget using Moodle's Generic Two widget authoring system.";
         $promptbits[] = "The widget edit page contains 5 code editing areas.";
-        $promptbits[] = "For HTML and JS code, Generico Two uses parameter placeholders of the format \{\{{parametername}\}\}. \n For SQL dataset parameters use ? placeholders.";
+        $placeholders = "For HTML and JS code, Generico Two uses parameter placeholders of the format ";
+        $placeholders .= "\{\{{parametername}\}\}. \n For SQL dataset parameters use ? placeholders.";
+        $promptbits[] = $placeholders;
         $vars = 'The following variables are resolved at runtime and are the ONLY built in variables available. ';
         $vars .= 'Do not invent others. Any other {{name}} placeholder must be declared by the widget author in the ';
         $vars .= 'variable defaults field, and is then supplied in the filter tag at runtime.' . PHP_EOL;
@@ -324,21 +324,32 @@ class fetch_aihelp extends external_api {
         $promptbits[] = $vars;
         $promptbits[] = "The five coding areas are:";
         $promptbits[] = "'id_content'. This is the main content area, which contains html and mustache. (field label: Body)";
-        $tend = "'id_templateend'. This is an optional content area which also contains html and mustache. It is used when the user at runtime may place content between this code and the code from id_content. ";
-        $tend .= "e.g for an audio player widget, the user may place a media link between the id_content code and the id_templateend code at runtime. (field label: Template End)";
+        $tend = "'id_templateend'. This is an optional content area which also contains html and mustache. ";
+        $tend .= "It is used when the user at runtime may place content between this code and the code from ";
+        $tend .= "id_content. e.g for an audio player widget, the user may place a media link between the ";
+        $tend .= "id_content code and the id_templateend code at runtime. (field label: Template End)";
         $promptbits[] = $tend;
         $examplejs = "require(['core/log'],
     function(log) {
         document.getElementById('{{AUTOID}}_greetingbox').textContent = 'hello';
     }
 );";
-        $promptbits[] = "'id_jscontent'. This contains javascript, probably but not always, the definition of an AMD module. It will usually perform some action on the html/mustache content. (field label: JS Content). An example script is: " . PHP_EOL . $examplejs;
-        $promptbits[] = "'id_dataset'. This contains SQL that may have ?parameters that will be replaced by user input values at runtime. (field label: Dataset Body)";
-        $promptbits[] = "'id_customcss'. This is the custom css area. CSS declared is injected onto the page at runtime during page load. Generico mustache and js variables are not available in the custom css area. So do not use them in custom css. (field label: Custom CSS)";
+        $jscontent = "'id_jscontent'. This contains javascript, probably but not always, the definition of an ";
+        $jscontent .= "AMD module. It will usually perform some action on the html/mustache content. (field label: ";
+        $jscontent .= "JS Content). An example script is: " . PHP_EOL . $examplejs;
+        $promptbits[] = $jscontent;
+        $dataset = "'id_dataset'. This contains SQL that may have ?parameters that will be replaced by user ";
+        $dataset .= "input values at runtime. (field label: Dataset Body)";
+        $promptbits[] = $dataset;
+        $customcss = "'id_customcss'. This is the custom css area. CSS declared is injected onto the page at ";
+        $customcss .= "runtime during page load. Generico mustache and js variables are not available in the ";
+        $customcss .= "custom css area. So do not use them in custom css. (field label: Custom CSS)";
+        $promptbits[] = $customcss;
         $promptbits[] = "The current editor content is:" . PHP_EOL . $currentcode;
         $promptbits[] = "You should follow the instructions below to add/edit editor content.";
-        $shape = "Your response should be a JSON object with two keys: 'editors' (an object keyed by editor id, holding the ";
-        $shape .= "complete replacement content for that editor) and 'description' (a short text description of the changes you made).";
+        $shape = "Your response should be a JSON object with two keys: 'editors' (an object keyed by editor id, ";
+        $shape .= "holding the complete replacement content for that editor) and 'description' (a short text ";
+        $shape .= "description of the changes you made).";
         $promptbits[] = $shape;
         $onlychanged = "IMPORTANT: only include an editor in the 'editors' object if its content actually needs to change. ";
         $onlychanged .= "Omit every editor you are leaving untouched entirely - do not echo back unchanged content. ";
@@ -352,5 +363,4 @@ class fetch_aihelp extends external_api {
         $promptbits[] = "Your instructions for this task are:" . PHP_EOL . $prompt;
         return implode(PHP_EOL, $promptbits);
     }
-
 }

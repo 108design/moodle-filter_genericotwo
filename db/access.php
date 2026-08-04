@@ -35,4 +35,3 @@ $capabilities = [
             'clonepermissionsfrom' => 'moodle/site:config',
     ],
 ];
-

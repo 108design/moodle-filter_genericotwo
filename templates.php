@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Admin CRUD page for genericotwo templates.
+ *
+ * @package    filter_genericotwo
+ * @copyright  2026 Justin Hunt <poodllsupport@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
@@ -142,7 +150,11 @@ echo $OUTPUT->header();
 
 echo html_writer::tag('p', get_string('templatesinstructions', 'filter_genericotwo'));
 if (!$isform) {
-    echo html_writer::link(new moodle_url('/filter/genericotwo/templates.php', ['action' => 'add']), get_string('addtemplate', 'filter_genericotwo'), ['class' => 'btn btn-primary']);
+    echo html_writer::link(
+        new moodle_url('/filter/genericotwo/templates.php', ['action' => 'add']),
+        get_string('addtemplate', 'filter_genericotwo'),
+        ['class' => 'btn btn-primary']
+    );
     echo html_writer::empty_tag('br');
     echo html_writer::empty_tag('br');
 }
@@ -181,7 +193,10 @@ $table->head = [
 ];
 foreach ($templates as $tmpl) {
     $editurl = new moodle_url('/filter/genericotwo/templates.php', ['action' => 'edit', 'id' => $tmpl->id]);
-    $deleteurl = new moodle_url('/filter/genericotwo/templates.php', ['action' => 'delete', 'id' => $tmpl->id, 'sesskey' => sesskey()]);
+    $deleteurl = new moodle_url(
+        '/filter/genericotwo/templates.php',
+        ['action' => 'delete', 'id' => $tmpl->id, 'sesskey' => sesskey()]
+    );
     $actions = html_writer::link($editurl, get_string('edit')) . ' | ' . html_writer::link($deleteurl, get_string('delete'));
 
     $versioncell = s($tmpl->version);
