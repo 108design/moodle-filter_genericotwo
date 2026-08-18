@@ -25,7 +25,6 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->libdir . '/tablelib.php');
 
 use filter_genericotwo\form\template_form;
 use filter_genericotwo\presets;
@@ -149,15 +148,6 @@ if ($isform) {
 echo $OUTPUT->header();
 
 echo html_writer::tag('p', get_string('templatesinstructions', 'filter_genericotwo'));
-if (!$isform) {
-    echo html_writer::link(
-        new moodle_url('/filter/genericotwo/templates.php', ['action' => 'add']),
-        get_string('addtemplate', 'filter_genericotwo'),
-        ['class' => 'btn btn-primary']
-    );
-    echo html_writer::empty_tag('br');
-    echo html_writer::empty_tag('br');
-}
 
 if ($isform) {
     if ($action === 'edit' && empty($data)) {
@@ -184,44 +174,44 @@ if ($isform) {
 $templates = $DB->get_records('filter_genericotwo_templates', null, 'name ASC');
 $presetmap = presets::fetch_presets_by_key();
 $haveupdates = false;
-$table = new html_table();
-$table->head = [
-    get_string('template_name', 'filter_genericotwo'),
-    get_string('template_templatekey', 'filter_genericotwo'),
-    get_string('template_version', 'filter_genericotwo'),
-    get_string('actions'),
-];
+$templatedata = [];
 foreach ($templates as $tmpl) {
-    $editurl = new moodle_url('/filter/genericotwo/templates.php', ['action' => 'edit', 'id' => $tmpl->id]);
-    $deleteurl = new moodle_url(
-        '/filter/genericotwo/templates.php',
-        ['action' => 'delete', 'id' => $tmpl->id, 'sesskey' => sesskey()]
-    );
-    $actions = html_writer::link($editurl, get_string('edit')) . ' | ' . html_writer::link($deleteurl, get_string('delete'));
-
-    $versioncell = s($tmpl->version);
     $updateversion = presets::template_has_update($tmpl, $presetmap);
+    $updateurl = '';
+    $updatelabel = '';
     if ($updateversion) {
         $haveupdates = true;
-        $updateurl = new moodle_url(
+        $updateurl = (new moodle_url(
             '/filter/genericotwo/templates.php',
             ['action' => 'update', 'id' => $tmpl->id, 'sesskey' => sesskey()]
-        );
-        $updatebutton = new single_button(
-            $updateurl,
-            get_string('updatetoversion', 'filter_genericotwo', $updateversion)
-        );
-        $versioncell .= ' ' . $OUTPUT->render($updatebutton);
+        ))->out(false);
+        $updatelabel = get_string('updatetoversion', 'filter_genericotwo', $updateversion);
     }
 
-    $table->data[] = [format_string($tmpl->name), s($tmpl->templatekey), $versioncell, $actions];
+    $templatedata[] = [
+        'name' => format_string($tmpl->name),
+        'templatekey' => $tmpl->templatekey,
+        'version' => $tmpl->version,
+        'hasupdate' => (bool) $updateversion,
+        'updateurl' => $updateurl,
+        'updatelabel' => $updatelabel,
+        'editurl' => (new moodle_url('/filter/genericotwo/templates.php', ['action' => 'edit', 'id' => $tmpl->id]))->out(false),
+        'deleteurl' => (new moodle_url(
+            '/filter/genericotwo/templates.php',
+            ['action' => 'delete', 'id' => $tmpl->id, 'sesskey' => sesskey()]
+        ))->out(false),
+    ];
 }
-if ($haveupdates) {
-    $updateallurl = new moodle_url('/filter/genericotwo/templates.php', ['action' => 'updateall', 'sesskey' => sesskey()]);
-    $updateallbutton = new single_button($updateallurl, get_string('updateall', 'filter_genericotwo'));
-    echo $OUTPUT->render($updateallbutton);
-    echo html_writer::empty_tag('br');
-}
-echo html_writer::table($table);
+
+$listdata = [
+    'addtemplateurl' => (new moodle_url('/filter/genericotwo/templates.php', ['action' => 'add']))->out(false),
+    'haveupdates' => $haveupdates,
+    'updateallurl' => $haveupdates
+        ? (new moodle_url('/filter/genericotwo/templates.php', ['action' => 'updateall', 'sesskey' => sesskey()]))->out(false)
+        : '',
+    'templates' => $templatedata,
+];
+
+echo $OUTPUT->render_from_template('filter_genericotwo/templates_list', $listdata);
 
 echo $OUTPUT->footer();

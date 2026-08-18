@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+
+{{!
+    Fallback JS delivery for content that can't rely on this request's own page lifecycle
+    (or the Fragment API) to flush js_amd_inline() to the client - e.g. external webservice/
+    mobile app responses, or content rendered after this page's own footer has already been
+    sent. The JS travels embedded in the HTML itself and self-executes via the
+    filter_genericotwo/loader AMD module's ready/queue trampoline. See jsloader.mustache for
+    the default path, used whenever this page's own footer (or the Fragment API) can still
+    deliver the JS via js_amd_inline().
+}}
+<script>
+    (function() {
+        if (typeof window.filter_genericotwo === 'undefined') {
+            window.filter_genericotwo = {
+                queue: [],
+                ready: false,
+                run: function(cb) {
+                    if (this.ready) {
+                        cb();
+                    } else {
+                        this.queue.push(cb);
+                    }
+                }
+            };
+        }
+
+        window.filter_genericotwo.run(function() {
+            {{{jscontent}}}
+        });
+    })();
+</script>

@@ -40,9 +40,12 @@ class renderer extends \plugin_renderer_base implements renderable {
      * @param string $mustachestring the template's mustache content
      * @param string $jsstring the template's mustache JS content
      * @param array $templatedata the context to render both against
+     * @param bool $usescriptfallback true if the JS can't rely on this request's own page
+     *      lifecycle (or the Fragment API) to deliver it, so it must be embedded as a
+     *      self-executing inline script instead of routed through js_amd_inline().
      * @return string the rendered HTML (with JS appended via the jsloader wrapper)
      */
-    public function do_render($mustachestring, $jsstring, $templatedata) {
+    public function do_render($mustachestring, $jsstring, $templatedata, $usescriptfallback = false) {
         // Fetch the mustache engine, reset the loader to string loader,
         // render the custom finish screen, and restore the original loader.
         $mustache = $this->get_mustache();
@@ -64,7 +67,10 @@ class renderer extends \plugin_renderer_base implements renderable {
 
         if (!empty($finishedjs)) {
             $jsloaderdata = ['jscontent' => $finishedjs];
-            $loadertpl = $mustache->loadTemplate('filter_genericotwo/jsloader');
+            $templatename = $usescriptfallback
+                ? 'filter_genericotwo/jsloader_fallback'
+                : 'filter_genericotwo/jsloader';
+            $loadertpl = $mustache->loadTemplate($templatename);
             $finishedcontents .= $loadertpl->render($jsloaderdata);
         }
 

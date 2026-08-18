@@ -15,24 +15,12 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 
-<script>
-    (function() {
-        if (typeof window.filter_genericotwo === 'undefined') {
-            window.filter_genericotwo = {
-                queue: [],
-                ready: false,
-                run: function(cb) {
-                    if (this.ready) {
-                        cb();
-                    } else {
-                        this.queue.push(cb);
-                    }
-                }
-            };
-        }
-
-        window.filter_genericotwo.run(function() {
-            {{{jscontent}}}
-        });
-    })();
-</script>
+{{!
+    Routes the template's JS through Moodle's own AMD-safe mechanism (js_amd_inline(), via
+    the js Mustache helper block below) instead of a literal inline script tag. Used whenever
+    this page's own footer, or the Fragment API, is still able to deliver the JS to the
+    client. See jsloader_fallback.mustache for the alternative used when neither applies.
+}}
+{{#js}}
+{{{jscontent}}}
+{{/js}}

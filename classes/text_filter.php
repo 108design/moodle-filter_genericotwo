@@ -114,6 +114,13 @@ class text_filter extends \core_filters\text_filter {
             $iswebservice = strpos($PAGE->url, $CFG->wwwroot . '/webservice/') === 0;
         }
 
+        // The default jsloader template relies on js_amd_inline(), which only reaches the
+        // client if this request's own footer, or the Fragment API, is still going to flush
+        // it. CLI and webservice responses never get a footer, and if this page's footer has
+        // already been sent, the JS has to travel embedded in the HTML instead.
+        // See renderer::do_render().
+        $usescriptfallback = $climode || $iswebservice || $PAGE->state >= \moodle_page::STATE_DONE;
+
         // If we want to ignore the filter (for "how to use generico" or "cut and paste" this style use) we let it go
         // to use this, make the last parameter of the filter passthrough=1.
         if (!empty($filterprops['passthrough'])) {
@@ -298,7 +305,7 @@ class text_filter extends \core_filters\text_filter {
 
         // Ready to go so ..
         $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
-        return $renderer->do_render($mustachestring, $jsstring, $filterprops);
+        return $renderer->do_render($mustachestring, $jsstring, $filterprops, $usescriptfallback);
     }
 
     /**
