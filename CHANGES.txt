@@ -1,0 +1,4 @@
+v1.0.1 (Build 2026090700)
+- added less idiosyncratic js loading
+- added more presets to install by default
+- fixed accordion name to be backwards compatible

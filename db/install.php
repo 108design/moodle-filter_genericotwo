@@ -32,7 +32,8 @@ function xmldb_filter_genericotwo_install() {
     // as plugin config), so pre-installing one just means inserting its preset as a record.
     $forinstall = [
         'welcomeuser', 'accordian', 'accordianitem', 'tabs', 'tabitem', 'videolightbox',
-        'pw-multiplayeraudio', 'pw-onceaudio', 'pw-poodllaudio', 'qrcode',
+        'pw-multiplayeraudio', 'pw-onceaudio', 'pw-poodllaudio', 'qrcode', 'lightbox2',
+        'mathfever',
     ];
 
     foreach ($forinstall as $templatekey) {
