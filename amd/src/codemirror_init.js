@@ -92,6 +92,8 @@ define([
 
 					container.css({
 						width: "100%",
+						// Bootstrap 4 gives .form-control a fixed height; let the editor wrapper grow.
+						height: "auto",
 					});
 
 					textarea.hide();
