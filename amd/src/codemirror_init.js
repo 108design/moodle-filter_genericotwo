@@ -113,6 +113,7 @@ define([
 					var extensions = [
 						basicSetup,
 						theme,
+						EditorView.lineWrapping,
 						EditorView.updateListener.of(function (update) {
 							if (update.docChanged) {
 								textarea.val(update.state.doc.toString());
