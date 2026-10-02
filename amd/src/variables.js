@@ -209,7 +209,7 @@ define(["core/str"], function (Str) {
                 wrapper.appendChild(button);
 
                 var menu = document.createElement("div");
-                menu.className = "filter_genericotwo_varmenu";
+                menu.className = "dropdown-menu filter_genericotwo_varmenu";
                 wrapper.appendChild(menu);
 
                 var searchbox = document.createElement("input");
@@ -341,6 +341,8 @@ define(["core/str"], function (Str) {
                 searchbox.addEventListener("input", applyFilter);
 
                 menu.addEventListener("keydown", function (e) {
+                    // This picker handles its own keys rather than Bootstrap's dropdown data API.
+                    e.stopPropagation();
                     if (e.key === "Escape") {
                         close();
                         button.focus();

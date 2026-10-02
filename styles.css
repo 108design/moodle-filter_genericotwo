@@ -83,8 +83,9 @@ body.filter-genericotwo-pagewidth .main-inner .d-flex > .form-control {
     overflow-y: auto;
 }
 
-.filter_genericotwo_varitem {
-    white-space: normal;
+#page-filter-genericotwo-templates .filter_genericotwo_varmenu .filter_genericotwo_varitem {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
 }
 
 .filter_genericotwo_varitem_label {
@@ -95,4 +96,9 @@ body.filter-genericotwo-pagewidth .main-inner .d-flex > .form-control {
     padding: 0.5rem 0.75rem 0;
     border-top: var(--bs-border-width) solid var(--bs-border-color, #dee2e6);
     margin-top: 0.25rem;
+}
+/* Bootstrap 4 clips overflowing children of open form sections. Keep the collapse
+   animation unchanged, but let the variable picker reach beyond an expanded section. */
+#page-filter-genericotwo-templates .mform .fcontainer.show {
+    overflow: visible;
 }
