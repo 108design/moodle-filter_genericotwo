@@ -84,7 +84,7 @@ There is a companion plugin for Moodle's TinyMCE HTML editor that supports both 
 4.  Enable the filter in `Site Administration > Plugins > Filters > Manage filters`.
 5.  If you're moving from the original Generico filter, see "Migrating from filter_generico" above.
 
-## Fork maintenance
+## Maintainer and origin
 
 This 108design downstream version is maintained by Andreas Giesen
 <andreas@108design.com>. Upstream: [Generico Two by Justin Hunt](https://github.com/justinhunt/moodle-filter_genericotwo).
@@ -93,4 +93,4 @@ adds plugin navigation and editor improvements and remains under GPL v3 or later
 
 ## License
 
-GNU GPL v3 or later.
+GNU General Public License version 3 or later. See [LICENSE.txt](LICENSE.txt) for the full terms.
