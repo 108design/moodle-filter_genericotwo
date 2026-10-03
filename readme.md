@@ -94,3 +94,8 @@ adds plugin navigation and editor improvements and remains under GPL v3 or later
 ## License
 
 GNU General Public License version 3 or later. See [LICENSE.txt](LICENSE.txt) for the full terms.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
