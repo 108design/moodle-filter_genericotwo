@@ -28,4 +28,4 @@ $plugin->version   = 2026100203;        // The current plugin version (Date: YYY
 $plugin->requires  = 2024100700;        // Requires this Moodle version.
 $plugin->component = 'filter_genericotwo'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.1-voom108.3 (Build 2026100203)';
+$plugin->release   = '1.0.1-108design.3 (Build 2026100203)';

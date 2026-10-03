@@ -1,1 +1,25 @@
 CLAUDE.local.md
+
+# Local project notes and development artifacts stay outside published source.
+PROJECT_*.md
+AGENTS.md
+CLAUDE.md
+HANDOVER*.md
+*_HANDOVER*.md
+.agents/
+.codex/
+.claude/
+.idea/
+.vscode/
+workspace/
+node_modules/
+coverage/
+__pycache__/
+*.pyc
+*.zip
+*.bundle
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
