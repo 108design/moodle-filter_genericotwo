@@ -1,3 +1,8 @@
+/**
+ * File documentation for amd/src/pagewidth_toggle.js.
+ *
+ * @package   filter_genericotwo
+ */
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

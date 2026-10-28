@@ -1,3 +1,8 @@
+/**
+ * File documentation for amd/src/variables.js.
+ *
+ * @package   filter_genericotwo
+ */
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
